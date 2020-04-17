@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "25975984544",
+    "firebase_url": "https://saude-sempre.firebaseio.com",
+    "project_id": "saude-sempre",
+    "storage_bucket": "saude-sempre.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:25975984544:android:4225d8931144431e7294c5",
+        "android_client_info": {
+          "package_name": "com.example.saude_sempre"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "25975984544-hilqpm04dkgvj567j1dhfaomujojo7s9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.saude_sempre",
+            "certificate_hash": "220c3f55ad88300e4226c8a780696b8985b0d88a"
+          }
+        },
+        {
+          "client_id": "25975984544-ba86p0ggggkj06cqe16nrtusmlmamf4p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzOHLXRqTvqQP_hfVjy4vBUTXWW11IZD0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "25975984544-ba86p0ggggkj06cqe16nrtusmlmamf4p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
