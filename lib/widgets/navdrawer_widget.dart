@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:saude_sempre/controller/controller.dart';
 import 'package:saude_sempre/pages/login_page.dart';
 
 Future<void> _handleSignOut() async {
@@ -16,23 +19,41 @@ Future<void> _handleSignOut() async {
 class NavDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Controller controller = Provider.of<Controller>(context);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            // child:
-            // Text(
-            //   'Side menu',
-            //   style: TextStyle(color: Colors.white, fontSize: 25),
-            // ),
-            decoration: BoxDecoration(
-              color: Colors.red.shade900,
-              // image: DecorationImage(
-              //   fit: BoxFit.fill,
-              //   image: AssetImage('assets/remedios.png'),
-              // ),
+          Container(
+            color: Colors.red.shade900,
+            child: Padding(
+              padding: EdgeInsets.only(left: 63, right: 63),
+              child: DrawerHeader(
+                decoration: BoxDecoration(color: Colors.red.shade900),
+                child: Observer(builder: (_) {
+                  return Container(
+                    width: 100.0,
+                    height: 150.0,
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade900,
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(controller.user.photo),
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(90.0)),
+                    ),
+                  );
+                }),
+              ),
             ),
+          ),
+          Observer(
+            builder: (_) {
+              return Text(
+                  controller.user == null ? "null" : controller.user.name);
+              //Text(controller.nomeUser == null ? "null" : controller.nomeUser),
+            },
           ),
           ListTile(
             leading: Icon(Icons.input),
@@ -58,15 +79,22 @@ class NavDrawer extends StatelessWidget {
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () {
-              try {
-                _handleSignOut();
-              } catch (e) {
-                print(e);
-              }
+              //controller.uidUser = null;
+              //controller.saveUser("", "", "", "");
+
+              //controller.user = null;
+
               Navigator.of(context).pushReplacement(
                   new MaterialPageRoute(builder: (BuildContext context) {
                 return new LoginPage();
-              }));
+              })).whenComplete(() {
+                controller.deleteUser();
+                try {
+                  _handleSignOut();
+                } catch (e) {
+                  print(e);
+                }
+              });
             },
           ),
         ],

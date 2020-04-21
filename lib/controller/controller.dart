@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:mobx/mobx.dart';
 import 'package:saude_sempre/models/medicamento.dart';
+import 'package:saude_sempre/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'controller.g.dart';
@@ -17,7 +18,12 @@ abstract class ControllerBase with Store {
   int currentIndex = 0;
 
   @observable
-  String uidUser;
+  String uidUser = "";
+  @observable
+  User user;
+
+  @observable
+  bool isDuplicado = false;
 
   @observable
   List<Medicamento> medicamentos = [];
@@ -30,25 +36,55 @@ abstract class ControllerBase with Store {
   //SharedPreferences prefs;
 
   @action
-  saveUser(String auth) async {
+  saveUser(User user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await prefs.setString('auth', auth);
+    prefs.setString('uid', user.uid);
+    prefs.setString('name', user.name);
+    prefs.setString('email', user.email);
+    prefs.setString('photo', user.photo);
+
+    prefs.get('uid');
   }
 
   @action
-  getUser() async {
+  deleteUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.clear();
+
+    user = null;
+  }
+
+  @action
+  Future<User> getUser() async {
+    User userGet;
     await SharedPreferences.getInstance().then((value) {
-      String danilo = value.get('auth');
-      print(danilo);
+      //uidUser = value.get('uidUser');
+      userGet = User(value.get('uid'), value.get('name'), value.get('email'),
+          value.get('photo'));
+
+      // userGet.uid = value.get('uidUSer');
+      // userGet.name = value.get('nameUser');
+      // userGet.email = value.get('emailUser');
+      // userGet.photo = value.get('photoUser');
+      print(userGet);
+
+      //uidUser = danilo;
+
+      //print(danilo);
+    }).whenComplete(() {
+      user = userGet;
     });
+
+    return user;
     // = await prefs.get('auth');
   }
 
   @action
   createRecord(
       String uidUser, String name, String frequency, String description) {
-    bool duplicado = false;
+    isDuplicado = false;
 
     // if (medicamentos.length <= 0) {
     //   databaseReference.push().set({
@@ -65,11 +101,11 @@ abstract class ControllerBase with Store {
           medicamentos[i].name == name &&
           medicamentos[i].frequency == frequency &&
           medicamentos[i].description == description) {
-        duplicado = true;
+        isDuplicado = true;
         break;
       }
     }
-    if (duplicado) {
+    if (isDuplicado) {
       print("-------- DADO DUPLICADO --------");
     } else {
       databaseReference.push().set({
@@ -122,7 +158,7 @@ abstract class ControllerBase with Store {
 
       List<Medicamento> medicamentosTemp = [];
       for (int i = 0; i < weightData.length; i++) {
-        if (weightData[i].uidUser == uidUser) {
+        if (weightData[i].uidUser == user.uid) {
           medicamentosTemp.add(weightData[i]);
         }
       }

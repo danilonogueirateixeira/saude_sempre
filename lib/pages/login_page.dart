@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:saude_sempre/controller/controller.dart';
+import 'package:saude_sempre/models/user.dart';
 import 'package:saude_sempre/pages/home_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -45,25 +47,31 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Controller controller = Provider.of<Controller>(context);
 
     return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              FlutterLogo(size: 150),
-              SizedBox(height: 50),
-              _signInButton(controller: controller),
-              RaisedButton(onPressed: _handleSignOut)
-            ],
+      body: Observer(builder: (_) {
+        return Container(
+          color: Colors.white,
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FlutterLogo(size: 150),
+                SizedBox(height: 50),
+                _signInButton(controller: controller),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -74,16 +82,20 @@ class _LoginPageState extends State<LoginPage> {
         signInWithGoogle().whenComplete(() {
           final FirebaseAuth _auth = FirebaseAuth.instance;
           _auth.currentUser().then((value) {
+            print("--------- ${value.photoUrl}");
             print("--------- ${value.displayName}");
             controller.uidUser = value.uid;
-          });
-          print("${_auth}");
-          controller.saveUser("DANILO");
+            User user = new User(value.uid, value.displayName,
+                value.displayName, value.photoUrl);
+            controller.saveUser(user);
 
-          Navigator.of(context).push(
+            controller.user = user;
+          });
+
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) {
-                return HomePage();
+                return HomePage(user: controller.user);
               },
             ),
           );

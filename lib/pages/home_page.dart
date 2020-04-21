@@ -3,11 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:saude_sempre/controller/controller.dart';
+import 'package:saude_sempre/models/user.dart';
 import 'package:saude_sempre/widgets/navdrawer_widget.dart';
 import 'package:toast/toast.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
 class HomePage extends StatefulWidget {
+  HomePage({Key key, @required this.user}) : super(key: key);
+
+  final User user;
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -35,12 +40,21 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Controller controller = Provider.of<Controller>(context);
 
+    //controller.getUser().whenComplete(() {
+    // print(controller.photoUser);
+    //print(controller.nameUser);
+    //});
+
     controller.getDados();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Observer(
         builder: (_) {
+          controller.user = widget.user;
+          // print(controller.photoUser);
+          //print(controller.nameUser);
+
           return Scaffold(
             drawer: NavDrawer(),
             appBar: AppBar(
@@ -53,12 +67,32 @@ class _HomePageState extends State<HomePage> {
               currentIndex: controller.currentIndex,
               items: [
                 BottomNavigationBarItem(
-                  icon: new Icon(Icons.fiber_new),
-                  title: Text("Remédios"),
+                  icon: Image.asset(
+                    "assets/medicine_bottom.png",
+                    height: 30,
+                  ),
+                  title: Text(
+                    "Remédios",
+                    style: controller.currentIndex == 0
+                        ? TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold)
+                        : TextStyle(
+                            color: Colors.grey, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 BottomNavigationBarItem(
-                  icon: new Icon(Icons.file_download),
-                  title: Text("Informações"),
+                  icon: Image.asset(
+                    "assets/health-report.png",
+                    height: 30,
+                  ),
+                  title: Text(
+                    "Informações",
+                    style: controller.currentIndex != 0
+                        ? TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold)
+                        : TextStyle(
+                            color: Colors.grey, fontWeight: FontWeight.bold),
+                  ),
                 )
               ],
             ),
@@ -159,8 +193,10 @@ class _HomePageState extends State<HomePage> {
           return AlertDialog(
             title: new Text("Adicionar Medicamento"),
             content: Container(
-              height: 160,
+              height: 200,
               child: new Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   TextField(
                     controller: medicamentoNameController,
@@ -180,13 +216,21 @@ class _HomePageState extends State<HomePage> {
             actions: <Widget>[
               // define os botões na base do dialogo
               new FlatButton(
-                child: new Text("Fechar"),
+                child: new Text("Cancelar"),
                 onPressed: () {
                   Navigator.of(context).pop();
+                  medicamentoNameController.text = "";
+                  medicamentoFrequencyController.text = "";
+                  medicamentoDescriptionController.text = "";
                 },
               ),
               new FlatButton(
-                child: new Text("Adicionar"),
+                child: new Text(
+                  "Adicionar",
+                  style: TextStyle(
+                    color: Colors.green,
+                  ),
+                ),
                 onPressed: () {
                   if (medicamentoNameController.text.isEmpty ||
                       medicamentoDescriptionController.text.isEmpty ||
@@ -204,21 +248,36 @@ class _HomePageState extends State<HomePage> {
                       animation: StyledToastAnimation.slideFromBottom,
                     );
                   } else {
-                    showToast(
-                      'Medicamento adicionado com sucesso!',
-                      context: context,
-                      axis: Axis.vertical,
-                      position: StyledToastPosition.center,
-                      backgroundColor: Colors.green.shade900,
-                      animation: StyledToastAnimation.slideFromBottom,
-                    );
                     controller.createRecord(
-                        controller.uidUser,
+                        controller.user.uid,
                         medicamentoNameController.text,
                         medicamentoFrequencyController.text,
                         medicamentoDescriptionController.text);
                     controller.getDados();
-                    Navigator.of(context).pop();
+
+                    if (controller.isDuplicado) {
+                      showToast(
+                        'Já existe um medicamento com as mesmas caracteristicas!',
+                        context: context,
+                        axis: Axis.vertical,
+                        position: StyledToastPosition.center,
+                        backgroundColor: Colors.red.shade900,
+                        animation: StyledToastAnimation.slideFromBottom,
+                      );
+                    } else {
+                      showToast(
+                        'Medicamento adicionado com sucesso!',
+                        context: context,
+                        axis: Axis.vertical,
+                        position: StyledToastPosition.center,
+                        backgroundColor: Colors.green.shade900,
+                        animation: StyledToastAnimation.slideFromBottom,
+                      );
+                      medicamentoNameController.text = "";
+                      medicamentoFrequencyController.text = "";
+                      medicamentoDescriptionController.text = "";
+                      Navigator.of(context).pop();
+                    }
                   }
                 },
               ),
@@ -251,82 +310,94 @@ class PlaceholderWidget extends StatelessWidget {
           ? Column(
               children: <Widget>[
                 Container(
-                  color: Colors.yellow,
-                  height: 100,
-                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height / 8.5,
+                  child: Image.asset("assets/remedios.png"),
                 ),
                 Container(
-                  child: Image.asset("assets/remedios.png"),
+                  height: MediaQuery.of(context).size.height / 1.5,
+                  child: Center(child: CircularProgressIndicator()),
                 ),
               ],
             )
-          : Container(
-              child: ListView.builder(
-                itemCount: controller.medicamentos.length,
-                itemBuilder: (context, i) {
-                  return Card(
-                    elevation: 5,
-                    child: Container(
-                      height: 100,
-                      padding: EdgeInsets.all(16),
-                      color: Colors.yellow.shade400,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+          : Column(
+              children: <Widget>[
+                Container(
+                  height: MediaQuery.of(context).size.height / 8.5,
+                  child: Image.asset("assets/remedios.png"),
+                ),
+                Container(
+                  padding: EdgeInsets.only(right: 16, left: 16),
+                  height: MediaQuery.of(context).size.height / 1.5,
+                  child: ListView.builder(
+                    itemCount: controller.medicamentos.length,
+                    itemBuilder: (context, i) {
+                      return Card(
+                        elevation: 5,
+                        child: Container(
+                          height: 100,
+                          padding: EdgeInsets.all(16),
+                          color: Colors.yellow.shade400,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              Text(
-                                controller.medicamentos[i].name,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 24),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    controller.medicamentos[i].name,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 24),
+                                  ),
+                                  Text(
+                                    controller.medicamentos[i].description,
+                                    style: TextStyle(
+                                        color: Colors.grey.shade700,
+                                        fontStyle: FontStyle.italic,
+                                        fontSize: 15),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                controller.medicamentos[i].description,
-                                style: TextStyle(
-                                    color: Colors.grey.shade700,
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 15),
-                              ),
+                              Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      "     de ",
+                                      style: TextStyle(
+                                          color: Colors.grey.shade700,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      controller.medicamentos[i].frequency,
+                                      style: TextStyle(
+                                          color: Colors.grey.shade700,
+                                          fontSize: 15),
+                                    ),
+                                    Text(
+                                      "     em ",
+                                      style: TextStyle(
+                                          color: Colors.grey.shade700,
+                                          fontSize: 14),
+                                    ),
+                                    Text(
+                                      controller.medicamentos[i].frequency,
+                                      style: TextStyle(
+                                          color: Colors.grey.shade700,
+                                          fontSize: 15),
+                                    ),
+                                  ]),
                             ],
                           ),
-                          Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "     de ",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 14),
-                                ),
-                                Text(
-                                  controller.medicamentos[i].frequency,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 15),
-                                ),
-                                Text(
-                                  "     em ",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 14),
-                                ),
-                                Text(
-                                  controller.medicamentos[i].frequency,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade700,
-                                      fontSize: 15),
-                                ),
-                              ]),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             );
     });
   }

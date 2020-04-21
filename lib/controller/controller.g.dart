@@ -43,6 +43,40 @@ mixin _$Controller on ControllerBase, Store {
     }, _$uidUserAtom, name: '${_$uidUserAtom.name}_set');
   }
 
+  final _$userAtom = Atom(name: 'ControllerBase.user');
+
+  @override
+  User get user {
+    _$userAtom.context.enforceReadPolicy(_$userAtom);
+    _$userAtom.reportObserved();
+    return super.user;
+  }
+
+  @override
+  set user(User value) {
+    _$userAtom.context.conditionallyRunInAction(() {
+      super.user = value;
+      _$userAtom.reportChanged();
+    }, _$userAtom, name: '${_$userAtom.name}_set');
+  }
+
+  final _$isDuplicadoAtom = Atom(name: 'ControllerBase.isDuplicado');
+
+  @override
+  bool get isDuplicado {
+    _$isDuplicadoAtom.context.enforceReadPolicy(_$isDuplicadoAtom);
+    _$isDuplicadoAtom.reportObserved();
+    return super.isDuplicado;
+  }
+
+  @override
+  set isDuplicado(bool value) {
+    _$isDuplicadoAtom.context.conditionallyRunInAction(() {
+      super.isDuplicado = value;
+      _$isDuplicadoAtom.reportChanged();
+    }, _$isDuplicadoAtom, name: '${_$isDuplicadoAtom.name}_set');
+  }
+
   final _$medicamentosAtom = Atom(name: 'ControllerBase.medicamentos');
 
   @override
@@ -63,14 +97,21 @@ mixin _$Controller on ControllerBase, Store {
   final _$saveUserAsyncAction = AsyncAction('saveUser');
 
   @override
-  Future saveUser(String auth) {
-    return _$saveUserAsyncAction.run(() => super.saveUser(auth));
+  Future saveUser(User user) {
+    return _$saveUserAsyncAction.run(() => super.saveUser(user));
+  }
+
+  final _$deleteUserAsyncAction = AsyncAction('deleteUser');
+
+  @override
+  Future deleteUser() {
+    return _$deleteUserAsyncAction.run(() => super.deleteUser());
   }
 
   final _$getUserAsyncAction = AsyncAction('getUser');
 
   @override
-  Future getUser() {
+  Future<User> getUser() {
     return _$getUserAsyncAction.run(() => super.getUser());
   }
 
@@ -131,7 +172,7 @@ mixin _$Controller on ControllerBase, Store {
   @override
   String toString() {
     final string =
-        'currentIndex: ${currentIndex.toString()},uidUser: ${uidUser.toString()},medicamentos: ${medicamentos.toString()}';
+        'currentIndex: ${currentIndex.toString()},uidUser: ${uidUser.toString()},user: ${user.toString()},isDuplicado: ${isDuplicado.toString()},medicamentos: ${medicamentos.toString()}';
     return '{$string}';
   }
 }
