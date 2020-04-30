@@ -94,6 +94,51 @@ mixin _$Controller on ControllerBase, Store {
     }, _$medicamentosAtom, name: '${_$medicamentosAtom.name}_set');
   }
 
+  final _$contatosAtom = Atom(name: 'ControllerBase.contatos');
+
+  @override
+  List<Contato> get contatos {
+    _$contatosAtom.context.enforceReadPolicy(_$contatosAtom);
+    _$contatosAtom.reportObserved();
+    return super.contatos;
+  }
+
+  @override
+  set contatos(List<Contato> value) {
+    _$contatosAtom.context.conditionallyRunInAction(() {
+      super.contatos = value;
+      _$contatosAtom.reportChanged();
+    }, _$contatosAtom, name: '${_$contatosAtom.name}_set');
+  }
+
+  final _$saveContatosAsyncAction = AsyncAction('saveContatos');
+
+  @override
+  Future saveContatos(Contato contato) {
+    return _$saveContatosAsyncAction.run(() => super.saveContatos(contato));
+  }
+
+  final _$getContatosAsyncAction = AsyncAction('getContatos');
+
+  @override
+  Future getContatos() {
+    return _$getContatosAsyncAction.run(() => super.getContatos());
+  }
+
+  final _$deleteContatoAsyncAction = AsyncAction('deleteContato');
+
+  @override
+  Future deleteContato(dynamic index) {
+    return _$deleteContatoAsyncAction.run(() => super.deleteContato(index));
+  }
+
+  final _$deleteContatosAsyncAction = AsyncAction('deleteContatos');
+
+  @override
+  Future deleteContatos() {
+    return _$deleteContatosAsyncAction.run(() => super.deleteContatos());
+  }
+
   final _$saveUserAsyncAction = AsyncAction('saveUser');
 
   @override
@@ -119,6 +164,16 @@ mixin _$Controller on ControllerBase, Store {
       ActionController(name: 'ControllerBase');
 
   @override
+  dynamic sendSms(List<Contato> contatos, String mensagem, dynamic context) {
+    final _$actionInfo = _$ControllerBaseActionController.startAction();
+    try {
+      return super.sendSms(contatos, mensagem, context);
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic onTabTapped(int index) {
     final _$actionInfo = _$ControllerBaseActionController.startAction();
     try {
@@ -140,20 +195,21 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
-  dynamic updateData(String child, String title, String description) {
+  dynamic updateData(String id, String uidUser, String name, String frequency,
+      String description) {
     final _$actionInfo = _$ControllerBaseActionController.startAction();
     try {
-      return super.updateData(child, title, description);
+      return super.updateData(id, uidUser, name, frequency, description);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic deleteData(String child) {
+  dynamic deleteData(String id) {
     final _$actionInfo = _$ControllerBaseActionController.startAction();
     try {
-      return super.deleteData(child);
+      return super.deleteData(id);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -172,7 +228,7 @@ mixin _$Controller on ControllerBase, Store {
   @override
   String toString() {
     final string =
-        'currentIndex: ${currentIndex.toString()},uidUser: ${uidUser.toString()},user: ${user.toString()},isDuplicado: ${isDuplicado.toString()},medicamentos: ${medicamentos.toString()}';
+        'currentIndex: ${currentIndex.toString()},uidUser: ${uidUser.toString()},user: ${user.toString()},isDuplicado: ${isDuplicado.toString()},medicamentos: ${medicamentos.toString()},contatos: ${contatos.toString()}';
     return '{$string}';
   }
 }

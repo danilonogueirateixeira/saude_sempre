@@ -1,10 +1,13 @@
 class Medicamento {
+  String id;
+
   String uidUser;
   String name;
   String frequency;
   String description;
 
   Medicamento(
+    this.id,
     this.uidUser,
     this.name,
     this.frequency,
@@ -12,12 +15,16 @@ class Medicamento {
   );
 
   factory Medicamento.fromJson(dynamic json) {
-    return Medicamento(json['uidUser'] as String, json['name'] as String,
-        json['frequency'] as String, json['description'] as String);
+    return Medicamento(
+        json['id'] as String,
+        json['uidUser'] as String,
+        json['name'] as String,
+        json['frequency'] as String,
+        json['description'] as String);
   }
 
   @override
   String toString() {
-    return '{ ${this.uidUser},${this.name}, ${this.frequency},${this.description} }';
+    return '{ ${this.id},${this.uidUser},${this.name}, ${this.frequency},${this.description} }';
   }
 }

@@ -12,6 +12,7 @@ final GoogleSignIn googleSignIn = GoogleSignIn();
 
 Future<String> signInWithGoogle() async {
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+
   final GoogleSignInAuthentication googleSignInAuthentication =
       await googleSignInAccount.authentication;
 
@@ -85,8 +86,8 @@ class _LoginPageState extends State<LoginPage> {
             print("--------- ${value.photoUrl}");
             print("--------- ${value.displayName}");
             controller.uidUser = value.uid;
-            User user = new User(value.uid, value.displayName,
-                value.displayName, value.photoUrl);
+            User user = new User(
+                value.uid, value.displayName, value.email, value.photoUrl);
             controller.saveUser(user);
 
             controller.user = user;

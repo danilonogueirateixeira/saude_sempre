@@ -1,13 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:saude_sempre/controller/controller.dart';
+import 'package:saude_sempre/pages/contacts_page.dart';
 import 'package:saude_sempre/pages/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:sms_maintained/sms.dart';
+
+const EVENTS_KEY = "fetch_events";
 
 Future<void> _handleSignOut() async {
   await googleSignIn.signOut();
@@ -16,7 +21,12 @@ Future<void> _handleSignOut() async {
   new Directory(appDir).delete(recursive: true);
 }
 
-class NavDrawer extends StatelessWidget {
+class NavDrawer extends StatefulWidget {
+  @override
+  _NavDrawerState createState() => _NavDrawerState();
+}
+
+class _NavDrawerState extends State<NavDrawer> {
   @override
   Widget build(BuildContext context) {
     Controller controller = Provider.of<Controller>(context);
@@ -26,11 +36,23 @@ class NavDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           Container(
-            color: Colors.red.shade900,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                stops: [0.1, 0.5, 0.7, 0.9],
+                colors: [
+                  Colors.red[900],
+                  Colors.red[900],
+                  Colors.red[800],
+                  Colors.orange[900],
+                ],
+              ),
+            ),
             child: Padding(
               padding: EdgeInsets.only(left: 63, right: 63),
               child: DrawerHeader(
-                decoration: BoxDecoration(color: Colors.red.shade900),
+                //decoration: BoxDecoration(color: Colors.red.shade900),
                 child: Observer(builder: (_) {
                   return Container(
                     width: 100.0,
@@ -50,8 +72,35 @@ class NavDrawer extends StatelessWidget {
           ),
           Observer(
             builder: (_) {
-              return Text(
-                  controller.user == null ? "null" : controller.user.name);
+              return Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    stops: [0.1, 0.5, 0.7, 0.9],
+                    colors: [
+                      Colors.yellow[500],
+                      Colors.yellow[500],
+                      Colors.yellow[400],
+                      Colors.yellow[300],
+                    ],
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      controller.user == null ? "null" : controller.user.name,
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    Text(controller.user == null
+                        ? "null"
+                        : controller.user.email),
+                  ],
+                ),
+              );
               //Text(controller.nomeUser == null ? "null" : controller.nomeUser),
             },
           ),
@@ -63,21 +112,30 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.verified_user),
             title: Text('Profile'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {},
           ),
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('Settings'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {},
           ),
           ListTile(
-            leading: Icon(Icons.border_color),
-            title: Text('Feedback'),
-            onTap: () => {Navigator.of(context).pop()},
+            leading: Icon(
+              Icons.contacts,
+              color: Colors.red.shade900,
+            ),
+            title: Text('Contatos Importantes'),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ContactsPage()));
+            },
           ),
           ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
+            leading: Icon(
+              Icons.exit_to_app,
+              color: Colors.red.shade900,
+            ),
+            title: Text('Sair'),
             onTap: () {
               //controller.uidUser = null;
               //controller.saveUser("", "", "", "");
@@ -89,6 +147,8 @@ class NavDrawer extends StatelessWidget {
                 return new LoginPage();
               })).whenComplete(() {
                 controller.deleteUser();
+                controller.contatos = [];
+                controller.medicamentos = [];
                 try {
                   _handleSignOut();
                 } catch (e) {
