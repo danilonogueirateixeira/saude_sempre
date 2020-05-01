@@ -60,6 +60,23 @@ mixin _$Controller on ControllerBase, Store {
     }, _$userAtom, name: '${_$userAtom.name}_set');
   }
 
+  final _$contatosAtom = Atom(name: 'ControllerBase.contatos');
+
+  @override
+  List<Contato> get contatos {
+    _$contatosAtom.context.enforceReadPolicy(_$contatosAtom);
+    _$contatosAtom.reportObserved();
+    return super.contatos;
+  }
+
+  @override
+  set contatos(List<Contato> value) {
+    _$contatosAtom.context.conditionallyRunInAction(() {
+      super.contatos = value;
+      _$contatosAtom.reportChanged();
+    }, _$contatosAtom, name: '${_$contatosAtom.name}_set');
+  }
+
   final _$isDuplicadoAtom = Atom(name: 'ControllerBase.isDuplicado');
 
   @override
@@ -75,6 +92,23 @@ mixin _$Controller on ControllerBase, Store {
       super.isDuplicado = value;
       _$isDuplicadoAtom.reportChanged();
     }, _$isDuplicadoAtom, name: '${_$isDuplicadoAtom.name}_set');
+  }
+
+  final _$dadosBaixadosAtom = Atom(name: 'ControllerBase.dadosBaixados');
+
+  @override
+  bool get dadosBaixados {
+    _$dadosBaixadosAtom.context.enforceReadPolicy(_$dadosBaixadosAtom);
+    _$dadosBaixadosAtom.reportObserved();
+    return super.dadosBaixados;
+  }
+
+  @override
+  set dadosBaixados(bool value) {
+    _$dadosBaixadosAtom.context.conditionallyRunInAction(() {
+      super.dadosBaixados = value;
+      _$dadosBaixadosAtom.reportChanged();
+    }, _$dadosBaixadosAtom, name: '${_$dadosBaixadosAtom.name}_set');
   }
 
   final _$medicamentosAtom = Atom(name: 'ControllerBase.medicamentos');
@@ -94,21 +128,56 @@ mixin _$Controller on ControllerBase, Store {
     }, _$medicamentosAtom, name: '${_$medicamentosAtom.name}_set');
   }
 
-  final _$contatosAtom = Atom(name: 'ControllerBase.contatos');
+  final _$isDuplicadoInfoAtom = Atom(name: 'ControllerBase.isDuplicadoInfo');
 
   @override
-  List<Contato> get contatos {
-    _$contatosAtom.context.enforceReadPolicy(_$contatosAtom);
-    _$contatosAtom.reportObserved();
-    return super.contatos;
+  bool get isDuplicadoInfo {
+    _$isDuplicadoInfoAtom.context.enforceReadPolicy(_$isDuplicadoInfoAtom);
+    _$isDuplicadoInfoAtom.reportObserved();
+    return super.isDuplicadoInfo;
   }
 
   @override
-  set contatos(List<Contato> value) {
-    _$contatosAtom.context.conditionallyRunInAction(() {
-      super.contatos = value;
-      _$contatosAtom.reportChanged();
-    }, _$contatosAtom, name: '${_$contatosAtom.name}_set');
+  set isDuplicadoInfo(bool value) {
+    _$isDuplicadoInfoAtom.context.conditionallyRunInAction(() {
+      super.isDuplicadoInfo = value;
+      _$isDuplicadoInfoAtom.reportChanged();
+    }, _$isDuplicadoInfoAtom, name: '${_$isDuplicadoInfoAtom.name}_set');
+  }
+
+  final _$dadosBaixadosInfoAtom =
+      Atom(name: 'ControllerBase.dadosBaixadosInfo');
+
+  @override
+  bool get dadosBaixadosInfo {
+    _$dadosBaixadosInfoAtom.context.enforceReadPolicy(_$dadosBaixadosInfoAtom);
+    _$dadosBaixadosInfoAtom.reportObserved();
+    return super.dadosBaixadosInfo;
+  }
+
+  @override
+  set dadosBaixadosInfo(bool value) {
+    _$dadosBaixadosInfoAtom.context.conditionallyRunInAction(() {
+      super.dadosBaixadosInfo = value;
+      _$dadosBaixadosInfoAtom.reportChanged();
+    }, _$dadosBaixadosInfoAtom, name: '${_$dadosBaixadosInfoAtom.name}_set');
+  }
+
+  final _$informacoesAtom = Atom(name: 'ControllerBase.informacoes');
+
+  @override
+  List<Informacoes> get informacoes {
+    _$informacoesAtom.context.enforceReadPolicy(_$informacoesAtom);
+    _$informacoesAtom.reportObserved();
+    return super.informacoes;
+  }
+
+  @override
+  set informacoes(List<Informacoes> value) {
+    _$informacoesAtom.context.conditionallyRunInAction(() {
+      super.informacoes = value;
+      _$informacoesAtom.reportChanged();
+    }, _$informacoesAtom, name: '${_$informacoesAtom.name}_set');
   }
 
   final _$saveContatosAsyncAction = AsyncAction('saveContatos');
@@ -164,10 +233,10 @@ mixin _$Controller on ControllerBase, Store {
       ActionController(name: 'ControllerBase');
 
   @override
-  dynamic sendSms(List<Contato> contatos, String mensagem, dynamic context) {
+  dynamic sendSms(dynamic context) {
     final _$actionInfo = _$ControllerBaseActionController.startAction();
     try {
-      return super.sendSms(contatos, mensagem, context);
+      return super.sendSms(context);
     } finally {
       _$ControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -226,9 +295,51 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
+  dynamic createRecordInfo(
+      String uidUser, String titulo, String descricao, String data) {
+    final _$actionInfo = _$ControllerBaseActionController.startAction();
+    try {
+      return super.createRecordInfo(uidUser, titulo, descricao, data);
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic updateDataInfo(
+      String id, String uidUser, String titulo, String descricao, String data) {
+    final _$actionInfo = _$ControllerBaseActionController.startAction();
+    try {
+      return super.updateDataInfo(id, uidUser, titulo, descricao, data);
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic deleteDataInfo(String id) {
+    final _$actionInfo = _$ControllerBaseActionController.startAction();
+    try {
+      return super.deleteDataInfo(id);
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic getDadosInfo() {
+    final _$actionInfo = _$ControllerBaseActionController.startAction();
+    try {
+      return super.getDadosInfo();
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     final string =
-        'currentIndex: ${currentIndex.toString()},uidUser: ${uidUser.toString()},user: ${user.toString()},isDuplicado: ${isDuplicado.toString()},medicamentos: ${medicamentos.toString()},contatos: ${contatos.toString()}';
+        'currentIndex: ${currentIndex.toString()},uidUser: ${uidUser.toString()},user: ${user.toString()},contatos: ${contatos.toString()},isDuplicado: ${isDuplicado.toString()},dadosBaixados: ${dadosBaixados.toString()},medicamentos: ${medicamentos.toString()},isDuplicadoInfo: ${isDuplicadoInfo.toString()},dadosBaixadosInfo: ${dadosBaixadosInfo.toString()},informacoes: ${informacoes.toString()}';
     return '{$string}';
   }
 }

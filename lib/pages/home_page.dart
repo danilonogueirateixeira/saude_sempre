@@ -12,7 +12,9 @@ import 'package:provider/provider.dart';
 import 'package:saude_sempre/controller/controller.dart';
 import 'package:saude_sempre/models/contato.dart';
 import 'package:saude_sempre/models/user.dart';
+import 'package:saude_sempre/widgets/informacoes_widget.dart';
 import 'package:saude_sempre/widgets/itemlist_widget.dart';
+import 'package:saude_sempre/widgets/medicamentos_widget.dart';
 import 'package:saude_sempre/widgets/navdrawer_widget.dart';
 import 'package:toast/toast.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
@@ -29,8 +31,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Widget> _children = [
-    PlaceholderWidget(color: Colors.white, image: "assets/remedios_home.png"),
-    PlaceholderWidget(color: Colors.white, image: "assets/infor_home.png"),
+    MedicamentosWidget(color: Colors.white, image: "assets/remedios_home.png"),
+    InformacoesWidget(color: Colors.white, image: "assets/infor_home.png"),
+
+    //PlaceholderWidget(color: Colors.white, image: "assets/infor_home.png"),
+    Container(color: Colors.green)
   ];
 
   TextEditingController medicamentoNameController = TextEditingController();
@@ -38,6 +43,10 @@ class _HomePageState extends State<HomePage> {
       TextEditingController();
   TextEditingController medicamentoFrequencyController =
       TextEditingController();
+
+  TextEditingController informacaoTituloController = TextEditingController();
+  TextEditingController informacaoDescricaoController = TextEditingController();
+  TextEditingController informacaoDataController = TextEditingController();
 
   TextEditingController contatoNomeController = TextEditingController();
   TextEditingController contatoNumeroController = TextEditingController();
@@ -200,6 +209,8 @@ class _HomePageState extends State<HomePage> {
     //});
 
     controller.getDados();
+    controller.getDadosInfo();
+
     controller.getContatos();
 
     return MaterialApp(
@@ -307,7 +318,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     onPressed: () async {
                       controller.contatos.length > 0
-                          ? controller.sendSms(controller.contatos, "", context)
+                          ? controller.sendSms(context)
                           : _showDialogSaveContato(controller);
                     }),
                 IconButton(
@@ -315,7 +326,9 @@ class _HomePageState extends State<HomePage> {
                     icon: Image.asset(
                       "assets/health-report.png",
                     ),
-                    onPressed: () {}),
+                    onPressed: () {
+                      _showDialogInfo(controller);
+                    }),
                 // IconButton(
                 //   icon: Icon(
                 //     Icons.file_download,
@@ -472,7 +485,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   MaskedTextField(
                     maskedTextFieldController: medicamentoFrequencyController,
-                    mask: "xx",
+                    mask: "xx:xx",
                     maxLength: 5,
                     keyboardType: TextInputType.numberWithOptions(
                         decimal: false, signed: false),
@@ -556,69 +569,121 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-}
 
-class PlaceholderWidget extends StatelessWidget {
-  final Color color;
-  final String image;
-
-  PlaceholderWidget({this.color, this.image});
-
-  @override
-  Widget build(BuildContext context) {
-    Controller controller = Provider.of<Controller>(context);
-
-    return Observer(builder: (_) {
-      //controller.getData();
-
-      print("----------------> builder list");
-
-      //print(controller.medicamentos.length);
-
-      return controller.medicamentos.isEmpty
-          ? Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(top: 16),
-                  height: MediaQuery.of(context).size.height / 8.5,
-                  child: Image.asset(image),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height / 1.5,
-                  child: Center(
-                      child: CircularProgressIndicator(
-                    backgroundColor: Colors.red,
-                    valueColor:
-                        new AlwaysStoppedAnimation<Color>(Colors.yellow),
-                  )),
-                ),
-              ],
-            )
-          : Column(
-              children: <Widget>[
-                Container(
-                  color: Colors.transparent,
-                  height: MediaQuery.of(context).size.height / 8.6,
-                  child: Image.asset(image),
-                  padding: EdgeInsets.only(top: 16),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(right: 16, left: 16),
-                    child: ListView.builder(
-                      itemCount: controller.medicamentos.length,
-                      itemBuilder: (context, i) {
-                        return itemlist_widget(
-                          controller: controller,
-                          index: i,
-                        );
-                      },
-                    ),
+  _showDialogInfo(controller) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // retorna um objeto do tipo Dialog
+        return Observer(builder: (_) {
+          return AlertDialog(
+            title: new Text("Adicionar Informação Médica"),
+            content: Container(
+              height: 215,
+              child: new Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  MaskedTextField(
+                    maskedTextFieldController: informacaoTituloController,
+                    maxLength: 30,
+                    inputDecoration: new InputDecoration(
+                        hintText: "Ex: Consulta com o Dr. João",
+                        labelText: "Titulo"),
+                  ),
+                  MaskedTextField(
+                    maskedTextFieldController: informacaoDescricaoController,
+                    maxLength: 100,
+                    inputDecoration: new InputDecoration(
+                        hintText:
+                            "Ex: Indicou que o sono ajuda a regular o extresse",
+                        labelText: "Descrição"),
+                  ),
+                  MaskedTextField(
+                    maskedTextFieldController: informacaoDataController,
+                    mask: "xx/xx/xxxx",
+                    maxLength: 10,
+                    keyboardType: TextInputType.numberWithOptions(
+                        decimal: false, signed: false),
+                    inputDecoration: new InputDecoration(
+                        hintText: "Ex: 30/04/2020", labelText: "Data"),
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              // define os botões na base do dialogo
+              new FlatButton(
+                child: new Text("Cancelar"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  informacaoTituloController.text = "";
+                  informacaoDescricaoController.text = "";
+                  informacaoDataController.text = "";
+                },
+              ),
+              new FlatButton(
+                child: new Text(
+                  "Adicionar",
+                  style: TextStyle(
+                    color: Colors.green,
                   ),
                 ),
-              ],
-            );
-    });
+                onPressed: () {
+                  if (informacaoTituloController.text.isEmpty ||
+                      informacaoDescricaoController.text.isEmpty ||
+                      informacaoDataController.text.isEmpty) {
+                    // Toast.show(
+                    //     "É necessário preencher todas informações!", context,
+                    //     duration: Toast.LENGTH_LONG, gravity: Toast.CENTER);
+
+                    showToast(
+                      'É necessário preencher todas informações!',
+                      context: context,
+                      axis: Axis.vertical,
+                      position: StyledToastPosition.center,
+                      backgroundColor: Colors.red.shade900,
+                      animation: StyledToastAnimation.slideFromBottom,
+                    );
+                  } else {
+                    controller.createRecordInfo(
+                        controller.user.uid,
+                        informacaoTituloController.text,
+                        informacaoDescricaoController.text,
+                        informacaoDataController.text);
+                    controller.getDadosInfo();
+
+                    if (controller.isDuplicadoInfo) {
+                      showToast(
+                        'Já existe uma informação com as mesmas caracteristicas!',
+                        context: context,
+                        axis: Axis.vertical,
+                        position: StyledToastPosition.center,
+                        backgroundColor: Colors.red.shade900,
+                        animation: StyledToastAnimation.slideFromBottom,
+                      );
+                    } else {
+                      showToast(
+                        'Informação adicionada com sucesso!',
+                        context: context,
+                        axis: Axis.vertical,
+                        position: StyledToastPosition.center,
+                        backgroundColor: Colors.green.shade900,
+                        animation: StyledToastAnimation.slideFromBottom,
+                      );
+                      informacaoTituloController.text = "";
+                      informacaoDescricaoController.text = "";
+                      informacaoDataController.text = "";
+                      Navigator.of(context).pop();
+                    }
+                  }
+                },
+              ),
+            ],
+          );
+        });
+      },
+    );
   }
 }
 

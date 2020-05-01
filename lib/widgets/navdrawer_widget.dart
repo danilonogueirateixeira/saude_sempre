@@ -104,20 +104,23 @@ class _NavDrawerState extends State<NavDrawer> {
               //Text(controller.nomeUser == null ? "null" : controller.nomeUser),
             },
           ),
-          ListTile(
-            leading: Icon(Icons.input),
-            title: Text('Welcome'),
-            onTap: () => {},
-          ),
-          ListTile(
-            leading: Icon(Icons.verified_user),
-            title: Text('Profile'),
-            onTap: () => {},
-          ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
-            onTap: () => {},
+          // ListTile(
+          //   leading: Icon(Icons.input),
+          //   title: Text('Welcome'),
+          //   onTap: () => {},
+          // ),
+          // ListTile(
+          //   leading: Icon(Icons.verified_user),
+          //   title: Text('Profile'),
+          //   onTap: () => {},
+          // ),
+          // ListTile(
+          //   leading: Icon(Icons.settings),
+          //   title: Text('Settings'),
+          //   onTap: () => {},
+          // ),
+          SizedBox(
+            height: 100,
           ),
           ListTile(
             leading: Icon(

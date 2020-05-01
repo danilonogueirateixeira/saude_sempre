@@ -69,6 +69,13 @@ dev_dependencies:
   mobx_codegen:
   build_runner:
   flutter_sms: 2.0.0+2
+  flutter_launcher_icons: ^0.7.5
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/heartbeat.png"
+
 
 
 

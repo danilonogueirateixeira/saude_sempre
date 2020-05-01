@@ -5,8 +5,8 @@ import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:saude_sempre/controller/controller.dart';
 import 'package:masked_text/masked_text.dart';
 
-class Itemlist_widget extends StatefulWidget {
-  const Itemlist_widget({
+class ItemListInfo_widget extends StatefulWidget {
+  const ItemListInfo_widget({
     Key key,
     @required this.controller,
     @required this.index,
@@ -16,15 +16,14 @@ class Itemlist_widget extends StatefulWidget {
   final int index;
 
   @override
-  _Itemlist_widgetState createState() => _Itemlist_widgetState();
+  _ItemListInfo_widgetState createState() => _ItemListInfo_widgetState();
 }
 
-TextEditingController medicamentoNameController = TextEditingController();
-TextEditingController medicamentoDescriptionController =
-    TextEditingController();
-TextEditingController medicamentoFrequencyController = TextEditingController();
+TextEditingController informacoesTituloController = TextEditingController();
+TextEditingController informacoesDescricaoController = TextEditingController();
+TextEditingController informacoesDataController = TextEditingController();
 
-class _Itemlist_widgetState extends State<Itemlist_widget> {
+class _ItemListInfo_widgetState extends State<ItemListInfo_widget> {
   @override
   Widget build(BuildContext context) {
     return Slidable(
@@ -32,7 +31,7 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
       actionExtentRatio: 0.25,
       child: GestureDetector(
         onTap: () {
-          print(widget.controller.medicamentos[widget.index].name);
+          print(widget.controller.informacoes[widget.index].titulo);
         },
         child: Card(
           elevation: 5,
@@ -61,7 +60,7 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      widget.controller.medicamentos[widget.index].name,
+                      widget.controller.informacoes[widget.index].titulo,
                       style: TextStyle(
                           color: Colors.red.shade900,
                           fontWeight: FontWeight.bold,
@@ -69,10 +68,9 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
                     ),
                     Container(
                       //color: Colors.red,
-                      width: MediaQuery.of(context).size.width - 140,
+                      width: MediaQuery.of(context).size.width - 150,
                       child: Text(
-                        widget
-                            .controller.medicamentos[widget.index].description,
+                        widget.controller.informacoes[widget.index].descricao,
                         style: TextStyle(
                             color: Colors.grey.shade700,
                             fontStyle: FontStyle.italic,
@@ -88,12 +86,7 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "a cada",
-                        style: TextStyle(
-                            color: Colors.grey.shade700, fontSize: 14),
-                      ),
-                      Text(
-                        " ${widget.controller.medicamentos[widget.index].frequency}",
+                        " ${widget.controller.informacoes[widget.index].data}",
                         style: TextStyle(
                             color: Colors.grey.shade700,
                             fontSize: 15,
@@ -125,14 +118,14 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
           color: Colors.blue.shade900,
           icon: Icons.mode_edit,
           onTap: () {
-            medicamentoNameController.text =
-                widget.controller.medicamentos[widget.index].name;
-            medicamentoFrequencyController.text =
-                widget.controller.medicamentos[widget.index].frequency;
-            medicamentoDescriptionController.text =
-                widget.controller.medicamentos[widget.index].description;
+            informacoesTituloController.text =
+                widget.controller.informacoes[widget.index].titulo;
+            informacoesDescricaoController.text =
+                widget.controller.informacoes[widget.index].descricao;
+            informacoesDataController.text =
+                widget.controller.informacoes[widget.index].data;
             _showDialogUpdate(widget.controller,
-                widget.controller.medicamentos[widget.index].id);
+                widget.controller.informacoes[widget.index].id);
           },
         ),
         IconSlideAction(
@@ -140,7 +133,7 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
           color: Colors.red,
           icon: Icons.delete,
           onTap: () => widget.controller
-              .deleteData(widget.controller.medicamentos[widget.index].id),
+              .deleteData(widget.controller.informacoes[widget.index].id),
         ),
       ],
     );
@@ -153,7 +146,7 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
         // retorna um objeto do tipo Dialog
         return Observer(builder: (_) {
           return AlertDialog(
-            title: new Text("Adicionar Medicamento"),
+            title: new Text("Alterar Informação Médica"),
             content: Container(
               height: 215,
               child: new Column(
@@ -161,22 +154,24 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   MaskedTextField(
-                    maskedTextFieldController: medicamentoNameController,
+                    maskedTextFieldController: informacoesTituloController,
                     maxLength: 20,
                     inputDecoration: new InputDecoration(
-                        hintText: "Ex: Losartana", labelText: "Nome"),
+                        hintText: "Ex: Consulta com o Dr. João",
+                        labelText: "Titulo"),
                   ),
                   MaskedTextField(
-                    maskedTextFieldController: medicamentoDescriptionController,
+                    maskedTextFieldController: informacoesDescricaoController,
                     maxLength: 100,
                     inputDecoration: new InputDecoration(
-                        hintText: "Ex: Para controlar a pressão arterial",
+                        hintText:
+                            "Ex: Indicou que o sono ajuda a regular o extresse",
                         labelText: "Descrição"),
                   ),
                   MaskedTextField(
-                    maskedTextFieldController: medicamentoFrequencyController,
-                    mask: "xx:xx",
-                    maxLength: 5,
+                    maskedTextFieldController: informacoesDataController,
+                    mask: "xx/xx/xxxxx",
+                    maxLength: 10,
                     keyboardType: TextInputType.numberWithOptions(
                         decimal: false, signed: false),
                     inputDecoration: new InputDecoration(
@@ -191,9 +186,9 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
                 child: new Text("Cancelar"),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  medicamentoNameController.text = "";
-                  medicamentoFrequencyController.text = "";
-                  medicamentoDescriptionController.text = "";
+                  informacoesTituloController.text = "";
+                  informacoesDescricaoController.text = "";
+                  informacoesDataController.text = "";
                 },
               ),
               new FlatButton(
@@ -204,9 +199,9 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
                   ),
                 ),
                 onPressed: () {
-                  if (medicamentoNameController.text.isEmpty ||
-                      medicamentoDescriptionController.text.isEmpty ||
-                      medicamentoFrequencyController.text.isEmpty) {
+                  if (informacoesTituloController.text.isEmpty ||
+                      informacoesDescricaoController.text.isEmpty ||
+                      informacoesDataController.text.isEmpty) {
                     // Toast.show(
                     //     "É necessário preencher todas informações!", context,
                     //     duration: Toast.LENGTH_LONG, gravity: Toast.CENTER);
@@ -220,17 +215,17 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
                       animation: StyledToastAnimation.slideFromBottom,
                     );
                   } else {
-                    controller.updateData(
+                    controller.updateDataInfo(
                         id,
                         controller.user.uid,
-                        medicamentoNameController.text,
-                        medicamentoFrequencyController.text,
-                        medicamentoDescriptionController.text);
-                    controller.getDados();
+                        informacoesTituloController.text,
+                        informacoesDescricaoController.text,
+                        informacoesDataController.text);
+                    controller.getDadosInfo();
 
-                    if (controller.isDuplicado) {
+                    if (controller.isDuplicadInfo) {
                       showToast(
-                        'Já existe um medicamento com as mesmas caracteristicas!',
+                        'Já existe uma informacao com as mesmas caracteristicas!',
                         context: context,
                         axis: Axis.vertical,
                         position: StyledToastPosition.center,
@@ -239,16 +234,16 @@ class _Itemlist_widgetState extends State<Itemlist_widget> {
                       );
                     } else {
                       showToast(
-                        'Medicamento adicionado com sucesso!',
+                        'Informação adicionada com sucesso!',
                         context: context,
                         axis: Axis.vertical,
                         position: StyledToastPosition.center,
                         backgroundColor: Colors.green.shade900,
                         animation: StyledToastAnimation.slideFromBottom,
                       );
-                      medicamentoNameController.text = "";
-                      medicamentoFrequencyController.text = "";
-                      medicamentoDescriptionController.text = "";
+                      informacoesTituloController.text = "";
+                      informacoesDescricaoController.text = "";
+                      informacoesDataController.text = "";
                       Navigator.of(context).pop();
                     }
                   }
