@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
@@ -5,7 +6,7 @@ import 'package:mobx/mobx.dart';
 import 'package:saude_sempre/models/contato.dart';
 import 'package:saude_sempre/models/informacoes.dart';
 import 'package:saude_sempre/models/medicamento.dart';
-import 'package:saude_sempre/models/user.dart';
+import 'package:saude_sempre/models/user_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_maintained/sms.dart';
 
@@ -26,7 +27,7 @@ abstract class ControllerBase with Store {
   String uidUser = "";
 
   @observable
-  User user;
+  UserApi user;
 
   @observable
   List<Contato> contatos = [];
@@ -200,114 +201,142 @@ abstract class ControllerBase with Store {
 
   @action
   saveContatos(Contato contato) async {
-    List<String> nomes = [];
-    List<String> numeros = [];
-    String nome = user.uid + "contatosNome";
-    String numero = user.uid + "contatosNumero";
+    // List<String> nomes = [];
+    // List<String> numeros = [];
+    // String nome = user.uid + "contatosNome";
+    // String numero = user.uid + "contatosNumero";
 
-    for (int i = 0; i < contatos.length; i++) {
-      nomes.add(contatos[i].nome);
-      numeros.add(contatos[i].numero);
-    }
+    // for (int i = 0; i < contatos.length; i++) {
+    //   nomes.add(contatos[i].nome);
+    //   numeros.add(contatos[i].numero);
+    // }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    prefs.setStringList(nome, nomes);
-    prefs.setStringList(numero, numeros);
+    // prefs.setStringList(nome, nomes);
+    // prefs.setStringList(numero, numeros);
   }
 
   @action
   getContatos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    List<dynamic> nomesTemp = [];
-    List<dynamic> numerosTemp = [];
-    String nome = user.uid + "contatosNome";
-    String numero = user.uid + "contatosNumero";
+    // List<dynamic> nomesTemp = [];
+    // List<dynamic> numerosTemp = [];
+    // String nome = user.uid + "contatosNome";
+    // String numero = user.uid + "contatosNumero";
 
-    nomesTemp = await prefs.get(nome);
-    numerosTemp = await prefs.get(numero);
+    // nomesTemp = await prefs.get(nome);
+    // numerosTemp = await prefs.get(numero);
 
-    if (nomesTemp != null) {
-      List<Contato> contatosTemp = [];
+    // if (nomesTemp != null) {
+    //   List<Contato> contatosTemp = [];
 
-      for (int i = 0; i < nomesTemp.length; i++) {
-        contatosTemp.add(Contato(nomesTemp[i], numerosTemp[i]));
-      }
+    //   for (int i = 0; i < nomesTemp.length; i++) {
+    //     contatosTemp.add(Contato(nomesTemp[i], numerosTemp[i]));
+    //   }
 
-      contatos = contatosTemp;
-    }
+    //   contatos = contatosTemp;
+    // }
 
-    // await SharedPreferences.getInstance().then((value) {
-    //   nomesTemp
-    //       .add(Contato(value.get('contatosNome'), value.get('numeroContato')));
-    // }).whenComplete(() {
-    //   contatos = contatoTemp;
-    // });
+    // // await SharedPreferences.getInstance().then((value) {
+    // //   nomesTemp
+    // //       .add(Contato(value.get('contatosNome'), value.get('numeroContato')));
+    // // }).whenComplete(() {
+    // //   contatos = contatoTemp;
+    // // });
   }
 
   @action
   deleteContato(index) async {
-    contatos.removeAt(index);
-    List<String> nomes = [];
-    List<String> numeros = [];
-    String nome = user.uid + "contatosNome";
-    String numero = user.uid + "contatosNumero";
+    // contatos.removeAt(index);
+    // List<String> nomes = [];
+    // List<String> numeros = [];
+    // String nome = user.uid + "contatosNome";
+    // String numero = user.uid + "contatosNumero";
 
-    for (int i = 0; i < contatos.length; i++) {
-      nomes.add(contatos[i].nome);
-      numeros.add(contatos[i].numero);
-    }
+    // for (int i = 0; i < contatos.length; i++) {
+    //   nomes.add(contatos[i].nome);
+    //   numeros.add(contatos[i].numero);
+    // }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    prefs.setStringList(nome, nomes);
-    prefs.setStringList(numero, numeros);
+    // prefs.setStringList(nome, nomes);
+    // prefs.setStringList(numero, numeros);
   }
 
   @action
   deleteContatos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String nome = user.uid + "contatosNome";
-    String numero = user.uid + "contatosNumero";
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String nome = user.uid + "contatosNome";
+    // String numero = user.uid + "contatosNumero";
 
-    prefs.remove(nome);
-    prefs.remove(numero);
+    // prefs.remove(nome);
+    // prefs.remove(numero);
 
-    contatos.clear();
+    // contatos.clear();
+  }
+
+  Dio dio;
+
+  initDio() async {
+    BaseOptions options = new BaseOptions(
+      baseUrl: "https://saude-sempre-app.herokuapp.com/saude-sempre",
+      connectTimeout: 50000,
+    );
+    dio = new Dio(options);
   }
 
   @action
-  saveUser(User user) async {
+  saveUserApi(UserApi userApi) async {
+    initDio();
+    Response response = await dio.post(
+      "/usuarios",
+      data: {
+        "email": userApi.email,
+        "id": 0,
+        "nome": userApi.nome,
+        "urlFoto": userApi.urlFoto
+      },
+      options: Options(method: "POST"),
+    );
+    print(response.data);
+    UserApi user = UserApi.fromJson(response.data);
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    prefs.setString('uid', user.uid);
-    prefs.setString('name', user.name);
+    prefs.setInt('id', user.id);
+    prefs.setString('nome', user.nome);
     prefs.setString('email', user.email);
-    prefs.setString('photo', user.photo);
+    prefs.setString('urlFoto', user.urlFoto);
 
-    prefs.get('uid');
+    int id = await prefs.get('id');
+    print(id);
   }
 
   @action
   deleteUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    prefs.remove('uid');
-    prefs.remove('name');
+    prefs.remove('id');
+    prefs.remove('nome');
     prefs.remove('email');
-    prefs.remove('photo');
+    prefs.remove('urlFoto');
 
     user = null;
   }
 
   @action
-  Future<User> getUser() async {
-    User userGet;
+  Future<UserApi> getUser() async {
+    UserApi userGet;
     await SharedPreferences.getInstance().then((value) {
       //uidUser = value.get('uidUser');
-      userGet = User(value.get('uid'), value.get('name'), value.get('email'),
-          value.get('photo'));
+      userGet = UserApi(
+          id: value.get('id'),
+          email: value.get('email'),
+          nome: value.get('nome'),
+          urlFoto: value.get('urlFoto'));
 
       // userGet.uid = value.get('uidUSer');
       // userGet.name = value.get('nameUser');
@@ -387,42 +416,42 @@ abstract class ControllerBase with Store {
 
   @action
   getDados() {
-    // dadosBaixados = true;
+    // // dadosBaixados = true;
 
-    databaseReference.once().then((DataSnapshot snapshot) {
-      print('${snapshot.value}');
+    // databaseReference.once().then((DataSnapshot snapshot) {
+    //   print('${snapshot.value}');
 
-      //convertData(snapshot.value);
+    //   //convertData(snapshot.value);
 
-      Map teste = (snapshot.value);
+    //   Map teste = (snapshot.value);
 
-      List<Medicamento> weightData = teste.entries
-          .map((entry) => Medicamento(
-              entry.key.toString(),
-              entry.value['idUser'].toString(),
-              entry.value['name'].toString(),
-              entry.value['frequency'].toString(),
-              entry.value['description'].toString()))
-          .toList();
+    //   List<Medicamento> weightData = teste.entries
+    //       .map((entry) => Medicamento(
+    //           entry.key.toString(),
+    //           entry.value['idUser'].toString(),
+    //           entry.value['name'].toString(),
+    //           entry.value['frequency'].toString(),
+    //           entry.value['description'].toString()))
+    //       .toList();
 
-      print(teste);
-      print(weightData);
+    //   print(teste);
+    //   print(weightData);
 
-      List<Medicamento> medicamentosTemp = [];
-      for (int i = 0; i < weightData.length; i++) {
-        if (weightData[i].uidUser == user.uid) {
-          medicamentosTemp.add(weightData[i]);
-        }
-      }
+    //   List<Medicamento> medicamentosTemp = [];
+    //   for (int i = 0; i < weightData.length; i++) {
+    //     if (weightData[i].uidUser == user.uid) {
+    //       medicamentosTemp.add(weightData[i]);
+    //     }
+    //   }
 
-      medicamentos = medicamentosTemp;
+    //   medicamentos = medicamentosTemp;
 
-      if (medicamentosTemp.length > 0) {
-        dadosBaixados = false;
-      } else {
-        dadosBaixados = true;
-      }
-    }).whenComplete(() {});
+    //   if (medicamentosTemp.length > 0) {
+    //     dadosBaixados = false;
+    //   } else {
+    //     dadosBaixados = true;
+    //   }
+    // }).whenComplete(() {});
   }
 
   @action
@@ -476,41 +505,41 @@ abstract class ControllerBase with Store {
 
   @action
   getDadosInfo() {
-    //dadosBaixadosInfo = true;
+    // //dadosBaixadosInfo = true;
 
-    databaseReference.once().then((DataSnapshot snapshot) {
-      print('${snapshot.value}');
+    // databaseReference.once().then((DataSnapshot snapshot) {
+    //   print('${snapshot.value}');
 
-      //convertData(snapshot.value);
+    //   //convertData(snapshot.value);
 
-      Map teste = (snapshot.value);
+    //   Map teste = (snapshot.value);
 
-      List<Informacoes> weightData = teste.entries
-          .map((entry) => Informacoes(
-              entry.key.toString(),
-              entry.value['idUserInfo'].toString(),
-              entry.value['titulo'].toString(),
-              entry.value['descricao'].toString(),
-              entry.value['data'].toString()))
-          .toList();
+    //   List<Informacoes> weightData = teste.entries
+    //       .map((entry) => Informacoes(
+    //           entry.key.toString(),
+    //           entry.value['idUserInfo'].toString(),
+    //           entry.value['titulo'].toString(),
+    //           entry.value['descricao'].toString(),
+    //           entry.value['data'].toString()))
+    //       .toList();
 
-      print(teste);
-      print(weightData);
+    //   print(teste);
+    //   print(weightData);
 
-      List<Informacoes> informacoesTemp = [];
-      for (int i = 0; i < weightData.length; i++) {
-        if (weightData[i].uidUser == user.uid) {
-          informacoesTemp.add(weightData[i]);
-        }
-      }
+    //   List<Informacoes> informacoesTemp = [];
+    //   for (int i = 0; i < weightData.length; i++) {
+    //     if (weightData[i].uidUser == user.uid) {
+    //       informacoesTemp.add(weightData[i]);
+    //     }
+    //   }
 
-      informacoes = informacoesTemp;
+    //   informacoes = informacoesTemp;
 
-      if (informacoesTemp.length > 0) {
-        dadosBaixadosInfo = false;
-      } else {
-        dadosBaixadosInfo = true;
-      }
-    }).whenComplete(() {});
+    //   if (informacoesTemp.length > 0) {
+    //     dadosBaixadosInfo = false;
+    //   } else {
+    //     dadosBaixadosInfo = true;
+    //   }
+    // }).whenComplete(() {});
   }
 }

@@ -30,6 +30,7 @@ class _NavDrawerState extends State<NavDrawer> {
   @override
   Widget build(BuildContext context) {
     Controller controller = Provider.of<Controller>(context);
+    controller.getUser();
 
     return Drawer(
       child: ListView(
@@ -61,7 +62,7 @@ class _NavDrawerState extends State<NavDrawer> {
                       color: Colors.red.shade900,
                       image: DecorationImage(
                         fit: BoxFit.cover,
-                        image: NetworkImage(controller.user.photo),
+                        image: NetworkImage(controller.user.urlFoto),
                       ),
                       borderRadius: BorderRadius.all(Radius.circular(90.0)),
                     ),
@@ -91,7 +92,7 @@ class _NavDrawerState extends State<NavDrawer> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      controller.user == null ? "null" : controller.user.name,
+                      controller.user == null ? "null" : controller.user.nome,
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),

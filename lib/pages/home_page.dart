@@ -11,7 +11,7 @@ import 'package:masked_text/masked_text.dart';
 import 'package:provider/provider.dart';
 import 'package:saude_sempre/controller/controller.dart';
 import 'package:saude_sempre/models/contato.dart';
-import 'package:saude_sempre/models/user.dart';
+import 'package:saude_sempre/models/user_api.dart';
 import 'package:saude_sempre/widgets/informacoes_widget.dart';
 import 'package:saude_sempre/widgets/itemlist_widget.dart';
 import 'package:saude_sempre/widgets/medicamentos_widget.dart';
@@ -23,7 +23,7 @@ import 'package:rxdart/subjects.dart';
 class HomePage extends StatefulWidget {
   HomePage({Key key, @required this.user}) : super(key: key);
 
-  final User user;
+  final UserApi user;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -217,7 +217,7 @@ class _HomePageState extends State<HomePage> {
       debugShowCheckedModeBanner: false,
       home: Observer(
         builder: (_) {
-          controller.user = widget.user;
+          //controller.user = widget.user;
           // print(controller.photoUser);
           //print(controller.nameUser);
 

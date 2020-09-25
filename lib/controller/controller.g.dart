@@ -46,14 +46,14 @@ mixin _$Controller on ControllerBase, Store {
   final _$userAtom = Atom(name: 'ControllerBase.user');
 
   @override
-  User get user {
+  UserApi get user {
     _$userAtom.context.enforceReadPolicy(_$userAtom);
     _$userAtom.reportObserved();
     return super.user;
   }
 
   @override
-  set user(User value) {
+  set user(UserApi value) {
     _$userAtom.context.conditionallyRunInAction(() {
       super.user = value;
       _$userAtom.reportChanged();
@@ -208,11 +208,11 @@ mixin _$Controller on ControllerBase, Store {
     return _$deleteContatosAsyncAction.run(() => super.deleteContatos());
   }
 
-  final _$saveUserAsyncAction = AsyncAction('saveUser');
+  final _$saveUserApiAsyncAction = AsyncAction('saveUserApi');
 
   @override
-  Future saveUser(User user) {
-    return _$saveUserAsyncAction.run(() => super.saveUser(user));
+  Future saveUserApi(UserApi userApi) {
+    return _$saveUserApiAsyncAction.run(() => super.saveUserApi(userApi));
   }
 
   final _$deleteUserAsyncAction = AsyncAction('deleteUser');
@@ -225,7 +225,7 @@ mixin _$Controller on ControllerBase, Store {
   final _$getUserAsyncAction = AsyncAction('getUser');
 
   @override
-  Future<User> getUser() {
+  Future<UserApi> getUser() {
     return _$getUserAsyncAction.run(() => super.getUser());
   }
 

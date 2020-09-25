@@ -4,7 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:saude_sempre/controller/controller.dart';
-import 'package:saude_sempre/models/user.dart';
+import 'package:saude_sempre/models/user_api.dart';
 import 'package:saude_sempre/pages/home_page.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -90,20 +90,26 @@ class _LoginPageState extends State<LoginPage> {
             print("--------- ${value.photoUrl}");
             print("--------- ${value.displayName}");
             controller.uidUser = value.uid;
-            User user = new User(
-                value.uid, value.displayName, value.email, value.photoUrl);
-            controller.saveUser(user);
 
-            controller.user = user;
+            UserApi user = UserApi(
+                id: 0,
+                email: value.email,
+                nome: value.displayName,
+                urlFoto: value.photoUrl);
+
+            controller.saveUserApi(user).whenComplete(() {
+              controller.user = user;
+
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return HomePage(user: controller.user);
+                  },
+                ),
+              );
+            });
+            //controller.saveUser(user);
           });
-
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) {
-                return HomePage(user: controller.user);
-              },
-            ),
-          );
         });
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),

@@ -41,6 +41,8 @@ dependencies:
   sms_maintained: ^0.2.5
   flutter_local_notifications: ^1.4.2
   rxdart: ^0.24.0
+  dio: ^3.0.10
+
 
 
 

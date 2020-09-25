@@ -76,13 +76,11 @@ class MyApp extends StatelessWidget {
             ),
             child: SplashScreen.navigate(
               name: 'assets/HeartBeat.flr',
-
-              // next: ,
               until: controller.getUser,
               startAnimation: 'Untitled',
               next: controller.user == null
                   ? (context) => LoginPage()
-                  : controller.user.uid == null
+                  : controller.user.id == null
                       ? (context) => LoginPage()
                       : (context) => HomePage(user: controller.user),
             ),
