@@ -14,7 +14,5 @@ jobs:
           version: $FLUTTER_VERSION
       - name: Installing dependencies
         run: flutter pub get
-      - name: Running tests
-        run: flutter test --no-pub
       - name: Build apk
         run: flutter build apk
