@@ -14,4 +14,8 @@ jobs:
           version: $FLUTTER_VERSION
       - name: Installing dependencies
         run: flutter pub get
+      - name: build apk
+        uses: ./action
+        with:
+            args: build apk --release
 
